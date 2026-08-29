@@ -1566,6 +1566,15 @@ export default function App() {
     dbSaveStoreSettings(nextSettings).catch(console.error);
   };
 
+  const handleTogglePromoCombos = () => {
+    const nextSettings = {
+      ...storeSettings,
+      showPromoCombos: storeSettings.showPromoCombos === false ? true : false,
+    };
+    setStoreSettings(nextSettings);
+    dbSaveStoreSettings(nextSettings).catch(console.error);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-stone-50/50 text-stone-900 font-sans antialiased selection:bg-rose-500 selection:text-white">
       {/* Admin Mode Floating Top Bar (Visible only when Admin is logged in) */}
@@ -1582,6 +1591,7 @@ export default function App() {
           onOpenThermal={() => handleOpenThermalReceiptModal()}
           onToggleDelivery={handleToggleDelivery}
           onToggleHeroBanner={handleToggleHeroBanner}
+          onTogglePromoCombos={handleTogglePromoCombos}
           onLogout={handleAdminLogout}
         />
       )}
@@ -1615,10 +1625,30 @@ export default function App() {
         />
 
         {/* Promo Combos Section */}
-        <PromoCombos
-          combos={combos}
-          onSelectCombo={handleSelectCombo}
-        />
+        {storeSettings.showPromoCombos !== false ? (
+          <PromoCombos
+            combos={combos}
+            onSelectCombo={handleSelectCombo}
+          />
+        ) : (
+          isAdminAuthenticated && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+              <div className="p-3 bg-rose-50/90 border border-rose-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-rose-950 shadow-2xs">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-1.5 bg-rose-100 rounded-xl text-sm">🔥</span>
+                  <span><strong>Modo Lojista:</strong> A seção de <strong>Kits & Combos Promocionais</strong> está <strong>oculta</strong> para os clientes.</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleTogglePromoCombos}
+                  className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer shrink-0 self-end sm:self-auto"
+                >
+                  Tornar Combos Visíveis
+                </button>
+              </div>
+            </div>
+          )
+        )}
 
         {/* Categories & Filter controls */}
         <CategoryFilter

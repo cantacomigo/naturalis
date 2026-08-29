@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Settings, Save, Check, Phone, DollarSign, Store, QrCode, Printer, Truck, Lock, Shield, MapPin, Bike, Building2, AlertCircle, CheckCircle2, ExternalLink, LayoutTemplate, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { X, Settings, Save, Check, Phone, DollarSign, Store, QrCode, Printer, Truck, Lock, Shield, MapPin, Bike, Building2, AlertCircle, CheckCircle2, ExternalLink, LayoutTemplate, Eye, EyeOff, Sparkles, Flame } from 'lucide-react';
 import { StoreSettings } from '../types';
 import { NaturalisLogo } from './NaturalisLogo';
 
@@ -136,32 +136,31 @@ export const StoreSettingsModal: React.FC<StoreSettingsModalProps> = ({
           </div>
 
           {/* Layout & Vitrine Display Settings */}
-          <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs font-bold text-stone-800">
-                <LayoutTemplate className="w-4 h-4 text-rose-500" />
-                <span>Carrossel de Sabores & Destaques (Bento Grid)</span>
-              </div>
-              <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
-                formData.showHeroBanner !== false
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                  : 'bg-stone-200/80 text-stone-600 border-stone-300'
-              }`}>
-                {formData.showHeroBanner !== false ? '👁️ Visível' : '🚫 Oculto'}
-              </span>
+          <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3.5">
+            <div className="flex items-center gap-2 text-xs font-bold text-stone-800">
+              <LayoutTemplate className="w-4 h-4 text-rose-500" />
+              <span>Personalização de Exibição & Seções do Cardápio</span>
             </div>
 
-            <div className="p-3 bg-white rounded-xl border border-stone-200 flex items-center justify-between gap-3">
+            {/* 1. Bento Grid Carousel & Mini Cards */}
+            <div className="p-3.5 bg-white rounded-xl border border-stone-200 flex items-center justify-between gap-3 shadow-2xs">
               <div className="space-y-0.5">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-stone-900">
-                    {formData.showHeroBanner !== false ? 'Exibir Carrossel e Mini Cards de Destaques' : 'Carrossel e Mini Cards Ocultos'}
+                    Carrossel de Sabores & Destaques
+                  </span>
+                  <span className={`text-[10px] font-extrabold px-2 py-0.2 rounded-full border ${
+                    formData.showHeroBanner !== false
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-stone-100 text-stone-500 border-stone-200'
+                  }`}>
+                    {formData.showHeroBanner !== false ? 'Visível' : 'Oculto'}
                   </span>
                 </div>
                 <p className="text-[11px] text-stone-500">
                   {formData.showHeroBanner !== false
-                    ? 'Exibe o carrossel rotativo de sabores, cartão de atendimento WhatsApp e mini destaques (o banner panorâmico da marca acima permanece sempre visível).'
-                    : 'Oculta o carrossel e os cards de destaques, levando o cliente direto para os kits/combos e cardápio de sabores (o banner panorâmico do topo permanece ativo).'}
+                    ? 'Exibe o carrossel rotativo de novidades, cartão WhatsApp e mini destaques (o banner da marca no topo permanece fixo).'
+                    : 'Oculta o carrossel e mini cards de destaques para os clientes.'}
                 </p>
               </div>
 
@@ -177,6 +176,48 @@ export const StoreSettingsModal: React.FC<StoreSettingsModalProps> = ({
                 <span
                   className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
                     formData.showHeroBanner !== false ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* 2. Combos & Kits Promocionais */}
+            <div className="p-3.5 bg-white rounded-xl border border-stone-200 flex items-center justify-between gap-3 shadow-2xs">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <Flame className="w-3.5 h-3.5 text-rose-500 fill-rose-500/30" />
+                    <span className="text-xs font-bold text-stone-900">
+                      Combos Especiais & Kits Promocionais
+                    </span>
+                  </div>
+                  <span className={`text-[10px] font-extrabold px-2 py-0.2 rounded-full border ${
+                    formData.showPromoCombos !== false
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-stone-100 text-stone-500 border-stone-200'
+                  }`}>
+                    {formData.showPromoCombos !== false ? 'Visível' : 'Oculto'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-stone-500">
+                  {formData.showPromoCombos !== false
+                    ? 'Exibe a seção de kits promocionais com caixas térmicas e combos com desconto.'
+                    : 'Oculta a seção de combos e kits com desconto, direcionando o cliente direto para o cardápio individual de sabores.'}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, showPromoCombos: formData.showPromoCombos === false ? true : false })}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  formData.showPromoCombos !== false ? 'bg-emerald-600' : 'bg-stone-300'
+                }`}
+                role="switch"
+                aria-checked={formData.showPromoCombos !== false}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                    formData.showPromoCombos !== false ? 'translate-x-5' : 'translate-x-0'
                   }`}
                 />
               </button>

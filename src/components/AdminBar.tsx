@@ -13,7 +13,8 @@ import {
   Volume2,
   LayoutTemplate,
   Eye,
-  EyeOff
+  EyeOff,
+  Flame
 } from 'lucide-react';
 import { StoreSettings } from '../types';
 import { orderSoundManager } from '../utils/orderAlertSound';
@@ -30,6 +31,7 @@ interface AdminBarProps {
   onOpenThermal: () => void;
   onToggleDelivery?: () => void;
   onToggleHeroBanner?: () => void;
+  onTogglePromoCombos?: () => void;
   onLogout: () => void;
 }
 
@@ -45,10 +47,12 @@ export const AdminBar: React.FC<AdminBarProps> = ({
   onOpenThermal,
   onToggleDelivery,
   onToggleHeroBanner,
+  onTogglePromoCombos,
   onLogout,
 }) => {
   const isDeliveryActive = storeSettings.deliveryEnabled !== false;
   const isHeroActive = storeSettings.showHeroBanner !== false;
+  const isCombosActive = storeSettings.showPromoCombos !== false;
 
   return (
     <div className="bg-stone-900 text-stone-100 border-b border-stone-800 shadow-md sticky top-0 z-50 animate-in slide-in-from-top-2 duration-200">
@@ -102,6 +106,23 @@ export const AdminBar: React.FC<AdminBarProps> = ({
             >
               {isHeroActive ? <Eye className="w-3.5 h-3.5 text-purple-300" /> : <EyeOff className="w-3.5 h-3.5 text-stone-400" />}
               <span>Carrossel: {isHeroActive ? '👁️ VISÍVEL' : '🚫 OCULTO'}</span>
+            </button>
+          )}
+
+          {/* Quick Combos Toggle */}
+          {onTogglePromoCombos && (
+            <button
+              type="button"
+              onClick={onTogglePromoCombos}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-bold text-[11px] border transition-all cursor-pointer shadow-2xs ${
+                isCombosActive
+                  ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30'
+                  : 'bg-stone-800 text-stone-400 border-stone-700 hover:bg-stone-700'
+              }`}
+              title={isCombosActive ? 'Clique para ocultar a seção de kits & combos promocionais para os clientes' : 'Clique para exibir a seção de kits & combos promocionais para os clientes'}
+            >
+              <Flame className={`w-3.5 h-3.5 ${isCombosActive ? 'text-rose-400 fill-rose-400/30' : 'text-stone-400'}`} />
+              <span>Combos: {isCombosActive ? '👁️ VISÍVEL' : '🚫 OCULTO'}</span>
             </button>
           )}
         </div>

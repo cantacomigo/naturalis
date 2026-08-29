@@ -571,7 +571,8 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   fruitPulpAppUrl: 'https://pedidospolpa.vercel.app/',
   fruitPulpSupplierName: 'Distribuidora de Polpas Naturais',
   fruitPulpSupplierPhone: '',
-  showHeroBanner: true
+  showHeroBanner: true,
+  showPromoCombos: true
 };
 
 export const REVIEWS_DATA: CustomerReview[] = [];
