@@ -181,7 +181,7 @@ export const FruitPulpOrdersModal: React.FC<FruitPulpOrdersModalProps> = ({
   storeSettings,
   onSaveSettings,
 }) => {
-  const defaultAppUrl = storeSettings.fruitPulpAppUrl || 'https://ai.studio/apps/ed1b11a4-eeb9-45b2-a82b-149eb44c4413';
+  const defaultAppUrl = storeSettings.fruitPulpAppUrl || 'https://pedidospolpa.vercel.app/';
 
   const [activeTab, setActiveTab] = useState<'app' | 'fast_order' | 'history' | 'settings'>('app');
   const [appUrl, setAppUrl] = useState(defaultAppUrl);
@@ -538,142 +538,115 @@ export const FruitPulpOrdersModal: React.FC<FruitPulpOrdersModalProps> = ({
           </button>
         </div>
 
-        {/* Tab 1: Applet Access & Project Launcher */}
+        {/* Tab 1: Live Embedded Vercel App & Project Controls */}
         {activeTab === 'app' && (
-          <div className="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6 bg-stone-100/60 space-y-4">
-            {/* Top Project Banner */}
-            <div className="bg-gradient-to-r from-emerald-900 via-stone-900 to-emerald-950 text-white p-5 sm:p-6 rounded-3xl shadow-md border border-emerald-800/40 relative overflow-hidden">
-              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
-                <div className="space-y-2 max-w-xl">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-2xl p-1.5 bg-emerald-500/20 rounded-2xl border border-emerald-400/30">🥭</span>
-                    <div>
-                      <h4 className="font-extrabold text-base sm:text-lg text-stone-50">
-                        Projeto de Polpas de Frutas & Suprimentos
-                      </h4>
-                      <p className="text-xs text-emerald-300 font-medium">
-                        Google AI Studio Applet
-                      </p>
-                    </div>
+          <div className="flex-1 flex flex-col overflow-hidden p-3 sm:p-5 bg-stone-100/70 gap-3">
+            {/* Top Toolbar Card */}
+            <div className="bg-gradient-to-r from-emerald-950 via-stone-900 to-emerald-900 text-white px-4 py-3 sm:px-5 sm:py-3.5 rounded-2xl shadow-sm border border-emerald-800/40 shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl p-1 bg-emerald-500/20 rounded-xl border border-emerald-400/30 shrink-0">🥭</span>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="font-extrabold text-sm sm:text-base text-stone-50 truncate">
+                      Sistema de Pedidos de Polpas & Insumos
+                    </h4>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      Vercel Live
+                    </span>
                   </div>
-
-                  <p className="text-xs text-stone-300 leading-relaxed">
-                    O aplicativo de polpas é um projeto dedicado do Google AI Studio para gerenciar estoque, fornecedores e pedidos de matéria-prima.
-                  </p>
-
-                  <div className="flex items-center gap-2 pt-1">
-                    <span className="text-[11px] text-stone-400 font-semibold">Link do Projeto:</span>
-                    <code className="bg-stone-950/80 px-2 py-1 rounded-lg text-emerald-300 font-mono text-[11px] select-all max-w-full truncate block border border-emerald-500/20">
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <code className="bg-stone-950/70 px-2 py-0.5 rounded text-emerald-300 font-mono text-[11px] select-all truncate max-w-xs sm:max-w-md border border-emerald-500/20">
                       {appUrl}
                     </code>
                   </div>
                 </div>
+              </div>
 
-                <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 shrink-0">
+              <div className="flex items-center gap-2 flex-wrap self-end md:self-auto shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(appUrl);
+                    showToast('Link copiado!');
+                  }}
+                  className="px-3 py-2 bg-white/10 hover:bg-white/20 text-stone-200 hover:text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Copiar Link da Aplicação"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Copiar Link</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIframeKey((k) => k + 1);
+                    setIsIframeLoaded(false);
+                    setIframeError(false);
+                  }}
+                  className="p-2 bg-white/10 hover:bg-white/20 text-stone-200 hover:text-white rounded-xl text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                  title="Recarregar Visualizador"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </button>
+
+                <a
+                  href={appUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-black rounded-xl text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
+                  id="fruit-pulp-external-link"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>Abrir em Nova Aba</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Live Interactive Iframe Display */}
+            <div className="flex-1 min-h-[480px] bg-white rounded-2xl border border-stone-300 shadow-inner overflow-hidden relative flex flex-col">
+              {!isIframeLoaded && !iframeError && (
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-stone-50/95 text-stone-600 gap-3 p-4 text-center">
+                  <div className="w-9 h-9 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-bold text-stone-800">Conectando ao Sistema de Polpas...</p>
+                    <p className="text-[11px] text-stone-400">Carregando aplicação Vercel em tempo real</p>
+                  </div>
+                </div>
+              )}
+
+              {iframeError ? (
+                <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-amber-50/50 space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center">
+                    <AlertCircle className="w-6 h-6" />
+                  </div>
+                  <div className="space-y-1 max-w-md">
+                    <h4 className="font-bold text-sm text-stone-900">Não foi possível carregar o quadro</h4>
+                    <p className="text-xs text-stone-600">
+                      Você pode abrir a aplicação diretamente no seu navegador clicando no botão abaixo:
+                    </p>
+                  </div>
                   <a
                     href={appUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-black rounded-2xl text-sm flex items-center justify-center gap-2.5 transition-all shadow-lg hover:shadow-emerald-500/20 active:scale-95 cursor-pointer"
-                    id="fruit-pulp-launch-btn"
+                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-sm transition-all"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    <span>Abrir Projeto no AI Studio</span>
+                    <span>Abrir em Nova Aba</span>
                   </a>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText(appUrl);
-                      showToast('Link do projeto copiado!');
-                    }}
-                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-stone-200 hover:text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>Copiar Link do Projeto</span>
-                  </button>
                 </div>
-              </div>
-            </div>
-
-            {/* Quick Helper / Instructions Card */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 sm:p-5 bg-white rounded-2xl border border-stone-200/90 shadow-2xs space-y-3">
-                <div className="flex items-center gap-2 text-stone-900 font-bold text-sm">
-                  <span className="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-black">1</span>
-                  <h5>Por que abrir em Nova Aba?</h5>
-                </div>
-                <p className="text-xs text-stone-600 leading-relaxed">
-                  Os projetos do <strong>Google AI Studio</strong> exigem autenticação segura direta pela sua Conta Google. O Google bloqueia a exibição do editor dentro de quadros (iframes) de outras páginas por proteção de segurança (código de erro 401).
-                </p>
-                <div className="p-2.5 bg-emerald-50 rounded-xl border border-emerald-100 text-[11px] text-emerald-900 font-medium flex items-start gap-2">
-                  <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span>Ao clicar em <strong>Abrir Projeto no AI Studio</strong>, o seu projeto abre completo em tela cheia com todos os recursos habilitados.</span>
-                </div>
-              </div>
-
-              <div className="p-4 sm:p-5 bg-white rounded-2xl border border-stone-200/90 shadow-2xs space-y-3">
-                <div className="flex items-center gap-2 text-stone-900 font-bold text-sm">
-                  <span className="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-black">2</span>
-                  <h5>Pedido Direto no WhatsApp</h5>
-                </div>
-                <p className="text-xs text-stone-600 leading-relaxed">
-                  Precisa repor Maracujá, Morango ou Manga agora mesmo? Use a aba <strong>Pedido Rápido (WhatsApp)</strong> aqui no modal para selecionar os sabores e enviar a lista formatada com 1 clique para o fornecedor.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('fast_order')}
-                  className="w-full py-2.5 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
-                >
-                  <ShoppingCart className="w-4 h-4 text-emerald-400" />
-                  <span>Ir para Pedido Rápido</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Optional Embedded Viewer Accordion for Deployed Apps */}
-            <div className="bg-white rounded-2xl border border-stone-200/90 shadow-2xs p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-stone-800 font-bold text-xs">
-                  <Layers className="w-4 h-4 text-stone-500" />
-                  <span>Visualizador Embutido (Para Links Públicos / Deployed Apps)</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setIsIframeFullscreen((f) => !f)}
-                  className="text-xs text-emerald-700 hover:text-emerald-800 font-bold cursor-pointer"
-                >
-                  {isIframeFullscreen ? 'Ocultar Quadro' : 'Abrir Visualizador Embutido'}
-                </button>
-              </div>
-
-              {isIframeFullscreen && (
-                <div className="space-y-2 pt-2 border-t border-stone-100">
-                  <div className="flex items-center justify-between text-[11px] text-stone-500">
-                    <span>Quadro de teste da URL:</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIframeKey((k) => k + 1);
-                        setIsIframeLoaded(false);
-                      }}
-                      className="flex items-center gap-1 text-stone-600 hover:text-stone-900 font-semibold cursor-pointer"
-                    >
-                      <RefreshCw className="w-3 h-3" />
-                      <span>Recarregar</span>
-                    </button>
-                  </div>
-                  <div className="h-96 rounded-xl border border-stone-200 overflow-hidden bg-stone-50 relative">
-                    <iframe
-                      key={iframeKey}
-                      src={appUrl}
-                      title="Sistema de Polpas de Frutas"
-                      className="w-full h-full border-0"
-                      onLoad={() => setIsIframeLoaded(true)}
-                      allow="camera; microphone; geolocation"
-                    />
-                  </div>
-                </div>
+              ) : (
+                <iframe
+                  key={iframeKey}
+                  src={appUrl}
+                  title="Sistema de Pedidos de Polpas Vercel"
+                  className="w-full h-full flex-1 border-0"
+                  onLoad={() => setIsIframeLoaded(true)}
+                  onError={() => setIframeError(true)}
+                  allow="camera; microphone; geolocation; clipboard-write; clipboard-read"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"
+                />
               )}
             </div>
           </div>
@@ -1057,7 +1030,7 @@ export const FruitPulpOrdersModal: React.FC<FruitPulpOrdersModalProps> = ({
                     type="url"
                     value={appUrl}
                     onChange={(e) => setAppUrl(e.target.value)}
-                    placeholder="https://ai.studio/apps/ed1b11a4-eeb9-45b2-a82b-149eb44c4413"
+                    placeholder="https://pedidospolpa.vercel.app/"
                     className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2.5 text-xs font-mono text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                     required
                   />

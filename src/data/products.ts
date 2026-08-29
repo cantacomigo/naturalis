@@ -568,7 +568,7 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   thermalCustomFooter: 'Conserve no congelador a -18°C. Obrigado pela preferência!',
   thermalAutoOpenPrint: false,
   adminPin: '1234',
-  fruitPulpAppUrl: 'https://ai.studio/apps/ed1b11a4-eeb9-45b2-a82b-149eb44c4413',
+  fruitPulpAppUrl: 'https://pedidospolpa.vercel.app/',
   fruitPulpSupplierName: 'Distribuidora de Polpas Naturais',
   fruitPulpSupplierPhone: ''
 };
