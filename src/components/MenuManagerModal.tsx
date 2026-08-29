@@ -104,6 +104,7 @@ export const MenuManagerModal: React.FC<MenuManagerModalProps> = ({
   onDeleteCategory,
   onReorderCategories,
   onOpenNeighborhoods,
+  onOpenFruitPulp,
   onResetToDefaults,
   onImportCatalog,
 }) => {
@@ -584,6 +585,21 @@ export const MenuManagerModal: React.FC<MenuManagerModalProps> = ({
               >
                 <MapPin className="w-3.5 h-3.5 text-rose-500" />
                 <span>Bairros & Frete</span>
+              </button>
+            )}
+
+            {onOpenFruitPulp && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenFruitPulp();
+                }}
+                className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer border border-emerald-300 shadow-2xs"
+                title="Abrir pedidos de polpas de frutas & insumos"
+              >
+                <span>🥭</span>
+                <span>Pedidos de Polpas</span>
               </button>
             )}
 

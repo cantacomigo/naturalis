@@ -62,6 +62,9 @@ import {
 import {
   NeighborhoodManagerModal
 } from './components/NeighborhoodManagerModal';
+import {
+  FruitPulpOrdersModal
+} from './components/FruitPulpOrdersModal';
 
 import { 
   GeladinhoProduct, 
@@ -250,6 +253,7 @@ export default function App() {
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [isMenuManagerOpen, setIsMenuManagerOpen] = useState(false);
   const [isNeighborhoodManagerOpen, setIsNeighborhoodManagerOpen] = useState(false);
+  const [isFruitPulpOpen, setIsFruitPulpOpen] = useState(false);
   const [isOrderManagerOpen, setIsOrderManagerOpen] = useState(false);
   const [isThermalPrintOpen, setIsThermalPrintOpen] = useState(false);
   const [selectedProductDetail, setSelectedProductDetail] = useState<GeladinhoProduct | null>(null);
@@ -264,7 +268,7 @@ export default function App() {
     }
   });
   const [isAdminAuthModalOpen, setIsAdminAuthModalOpen] = useState(false);
-  const [pendingAdminAction, setPendingAdminAction] = useState<'menu' | 'orders' | 'settings' | 'thermal' | 'neighborhoods' | null>(null);
+  const [pendingAdminAction, setPendingAdminAction] = useState<'menu' | 'orders' | 'settings' | 'thermal' | 'neighborhoods' | 'fruitpulp' | null>(null);
 
   // Orders History & Thermal Printing
   const [ordersHistory, setOrdersHistory] = useState<OrderRecord[]>(() => {
@@ -1251,13 +1255,14 @@ export default function App() {
   };
 
   // Security & Admin Action Access Guard
-  const requestAdminAction = (action: 'menu' | 'orders' | 'settings' | 'thermal' | 'neighborhoods') => {
+  const requestAdminAction = (action: 'menu' | 'orders' | 'settings' | 'thermal' | 'neighborhoods' | 'fruitpulp') => {
     if (isAdminAuthenticated) {
       if (action === 'menu') setIsMenuManagerOpen(true);
       else if (action === 'orders') setIsOrderManagerOpen(true);
       else if (action === 'settings') setIsSettingsOpen(true);
       else if (action === 'thermal') handleOpenThermalReceiptModal();
       else if (action === 'neighborhoods') setIsNeighborhoodManagerOpen(true);
+      else if (action === 'fruitpulp') setIsFruitPulpOpen(true);
     } else {
       setPendingAdminAction(action);
       setIsAdminAuthModalOpen(true);
@@ -1278,6 +1283,7 @@ export default function App() {
       else if (action === 'settings') setIsSettingsOpen(true);
       else if (action === 'thermal') handleOpenThermalReceiptModal();
       else if (action === 'neighborhoods') setIsNeighborhoodManagerOpen(true);
+      else if (action === 'fruitpulp') setIsFruitPulpOpen(true);
     }
   };
 
@@ -1289,6 +1295,7 @@ export default function App() {
     } catch {}
     setIsMenuManagerOpen(false);
     setIsNeighborhoodManagerOpen(false);
+    setIsFruitPulpOpen(false);
     setIsOrderManagerOpen(false);
     setIsSettingsOpen(false);
     setIsThermalPrintOpen(false);
@@ -1561,6 +1568,7 @@ export default function App() {
           onOpenOrders={() => setIsOrderManagerOpen(true)}
           onOpenMenu={() => setIsMenuManagerOpen(true)}
           onOpenNeighborhoods={() => setIsNeighborhoodManagerOpen(true)}
+          onOpenFruitPulp={() => setIsFruitPulpOpen(true)}
           onOpenSettings={() => setIsSettingsOpen(true)}
           onOpenThermal={() => handleOpenThermalReceiptModal()}
           onToggleDelivery={handleToggleDelivery}
@@ -1736,6 +1744,7 @@ export default function App() {
         onDeleteCategory={handleDeleteCategory}
         onReorderCategories={handleReorderCategories}
         onOpenNeighborhoods={() => requestAdminAction('neighborhoods')}
+        onOpenFruitPulp={() => requestAdminAction('fruitpulp')}
         onResetToDefaults={handleResetCatalogDefaults}
         onImportCatalog={handleImportCatalog}
       />
@@ -1795,7 +1804,16 @@ export default function App() {
         settings={storeSettings}
         onSaveSettings={handleSaveStoreSettings}
         onOpenNeighborhoods={() => requestAdminAction('neighborhoods')}
+        onOpenFruitPulp={() => requestAdminAction('fruitpulp')}
         onLogoutAdmin={handleAdminLogout}
+      />
+
+      {/* Fruit Pulp Orders & Supplier Supply Management */}
+      <FruitPulpOrdersModal
+        isOpen={isFruitPulpOpen}
+        onClose={() => setIsFruitPulpOpen(false)}
+        storeSettings={storeSettings}
+        onSaveSettings={handleSaveStoreSettings}
       />
 
       <NeighborhoodManagerModal
