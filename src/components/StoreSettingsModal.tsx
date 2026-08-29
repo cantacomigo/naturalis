@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Settings, Save, Check, Phone, DollarSign, Store, QrCode, Printer, Truck, Lock, Shield, MapPin, Bike, Building2, AlertCircle, CheckCircle2, ExternalLink, LayoutTemplate, Eye, EyeOff, Sparkles, Flame } from 'lucide-react';
+import { X, Settings, Save, Check, Phone, DollarSign, Store, QrCode, Printer, Truck, Lock, Shield, MapPin, Bike, Building2, AlertCircle, CheckCircle2, ExternalLink, LayoutTemplate, Eye, EyeOff, Sparkles, Flame, Image as ImageIcon } from 'lucide-react';
 import { StoreSettings } from '../types';
 import { NaturalisLogo } from './NaturalisLogo';
 
@@ -10,6 +10,7 @@ interface StoreSettingsModalProps {
   onSaveSettings: (newSettings: StoreSettings) => void;
   onOpenNeighborhoods?: () => void;
   onOpenFruitPulp?: () => void;
+  onOpenBannerManager?: () => void;
   onLogoutAdmin?: () => void;
 }
 
@@ -20,6 +21,7 @@ export const StoreSettingsModal: React.FC<StoreSettingsModalProps> = ({
   onSaveSettings,
   onOpenNeighborhoods,
   onOpenFruitPulp,
+  onOpenBannerManager,
   onLogoutAdmin,
 }) => {
   const [formData, setFormData] = useState<StoreSettings>(settings);
@@ -221,6 +223,40 @@ export const StoreSettingsModal: React.FC<StoreSettingsModalProps> = ({
                   }`}
                 />
               </button>
+            </div>
+
+            {/* 3. Panoramic Banner Photos Manager */}
+            <div className="p-3.5 bg-amber-50/60 rounded-xl border border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <ImageIcon className="w-3.5 h-3.5 text-amber-600" />
+                    <span className="text-xs font-bold text-stone-900">
+                      Carrossel de Fotos do Topo (Passando Automaticamente)
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-extrabold px-2 py-0.2 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                    {formData.panoramicBanners?.filter(b => b.active !== false).length ?? 3} Fotos Ativas
+                  </span>
+                </div>
+                <p className="text-[11px] text-stone-600">
+                  Adicione fotos dos produtos cadastrados ou envie novas fotos personalizadas para o banner rotativo do topo.
+                </p>
+              </div>
+
+              {onOpenBannerManager && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenBannerManager();
+                  }}
+                  className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold rounded-xl text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+                >
+                  <ImageIcon className="w-3.5 h-3.5" />
+                  <span>Gerenciar Fotos do Topo</span>
+                </button>
+              )}
             </div>
           </div>
 

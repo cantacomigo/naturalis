@@ -572,7 +572,40 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   fruitPulpSupplierName: 'Distribuidora de Polpas Naturais',
   fruitPulpSupplierPhone: '',
   showHeroBanner: true,
-  showPromoCombos: true
+  showPromoCombos: true,
+  panoramicAutoplayEnabled: true,
+  panoramicAutoplayIntervalSec: 5,
+  panoramicBanners: [
+    {
+      id: 'banner-default-1',
+      imageUrl: '/images/banner.jpg',
+      title: 'Naturalis Gourmet',
+      subtitle: 'Sabores Reais • Geladinhos Artesanais',
+      badge: 'Marca Oficial',
+      linkAction: 'catalog',
+      active: true
+    },
+    {
+      id: 'banner-default-2',
+      imageUrl: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?auto=format&fit=crop&w=1400&q=80',
+      title: 'Ninho com Nutella Especial',
+      subtitle: 'O clássico mais amado com pura cremosidade',
+      badge: 'Mais Pedido',
+      linkAction: 'product',
+      productId: 'p1',
+      active: true
+    },
+    {
+      id: 'banner-default-3',
+      imageUrl: 'https://images.unsplash.com/photo-1505394033641-40c6ad1178d7?auto=format&fit=crop&w=1400&q=80',
+      title: 'Frutas Vermelhas Supreme',
+      subtitle: 'Com pedacinhos de amora, morango e framboesa',
+      badge: 'Refrescante',
+      linkAction: 'product',
+      productId: 'p3',
+      active: true
+    }
+  ]
 };
 
 export const REVIEWS_DATA: CustomerReview[] = [];

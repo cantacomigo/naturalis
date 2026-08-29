@@ -14,7 +14,8 @@ import {
   LayoutTemplate,
   Eye,
   EyeOff,
-  Flame
+  Flame,
+  Image as ImageIcon
 } from 'lucide-react';
 import { StoreSettings } from '../types';
 import { orderSoundManager } from '../utils/orderAlertSound';
@@ -27,6 +28,7 @@ interface AdminBarProps {
   onOpenMenu: () => void;
   onOpenNeighborhoods: () => void;
   onOpenFruitPulp: () => void;
+  onOpenBannerManager?: () => void;
   onOpenSettings: () => void;
   onOpenThermal: () => void;
   onToggleDelivery?: () => void;
@@ -43,6 +45,7 @@ export const AdminBar: React.FC<AdminBarProps> = ({
   onOpenMenu,
   onOpenNeighborhoods,
   onOpenFruitPulp,
+  onOpenBannerManager,
   onOpenSettings,
   onOpenThermal,
   onToggleDelivery,
@@ -123,6 +126,19 @@ export const AdminBar: React.FC<AdminBarProps> = ({
             >
               <Flame className={`w-3.5 h-3.5 ${isCombosActive ? 'text-rose-400 fill-rose-400/30' : 'text-stone-400'}`} />
               <span>Combos: {isCombosActive ? '👁️ VISÍVEL' : '🚫 OCULTO'}</span>
+            </button>
+          )}
+
+          {/* Quick Banner Photos Manager */}
+          {onOpenBannerManager && (
+            <button
+              type="button"
+              onClick={onOpenBannerManager}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-bold text-[11px] border bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30 transition-all cursor-pointer shadow-2xs"
+              title="Gerenciar e adicionar fotos dos produtos no carrossel do topo"
+            >
+              <ImageIcon className="w-3.5 h-3.5 text-amber-400" />
+              <span>Fotos do Topo</span>
             </button>
           )}
         </div>

@@ -16,9 +16,11 @@ import {
   Check, 
   Pause, 
   Play,
-  Shuffle
+  Shuffle,
+  Image as ImageIcon,
+  Sliders
 } from 'lucide-react';
-import { GeladinhoProduct, StoreSettings } from '../types';
+import { GeladinhoProduct, StoreSettings, PanoramicBannerSlide } from '../types';
 import { formatCurrency } from '../utils/whatsapp';
 
 export interface HeroBannerProps {
@@ -31,6 +33,7 @@ export interface HeroBannerProps {
   onOpenQuiz: () => void;
   isAdminAuthenticated?: boolean;
   onToggleHeroBanner?: () => void;
+  onOpenBannerManager?: () => void;
 }
 
 interface DynamicBannerSlide {
@@ -113,8 +116,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   onOpenProductDetails,
   onScrollToCatalog,
   onScrollToCombos,
+  onOpenQuiz,
   isAdminAuthenticated,
   onToggleHeroBanner,
+  onOpenBannerManager,
 }) => {
   // STRICTLY use ONLY real products from the menu/cardápio
   const availableProducts = products.filter((p) => p.isAvailable !== false);
@@ -283,22 +288,204 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
   const isBentoVisible = storeSettings.showHeroBanner !== false;
 
+  // Active panoramic slides from store settings (with fallback)
+  const fallbackPanoramicSlide: PanoramicBannerSlide = {
+    id: 'banner-default-brand',
+    imageUrl: '/images/banner.jpg',
+    title: 'Naturalis Gourmet',
+    subtitle: 'Sabores Reais • Geladinhos Artesanais',
+    badge: 'Marca Oficial',
+    linkAction: 'catalog',
+    active: true
+  };
+
+  const panoramicSlides: PanoramicBannerSlide[] = (
+    storeSettings.panoramicBanners && storeSettings.panoramicBanners.length > 0
+      ? storeSettings.panoramicBanners.filter((b) => b.active !== false)
+      : [fallbackPanoramicSlide]
+  );
+
+  const activePanoramicSlides: PanoramicBannerSlide[] = panoramicSlides.length > 0 ? panoramicSlides : [fallbackPanoramicSlide];
+
+  const [currentPanoramicIndex, setCurrentPanoramicIndex] = useState(0);
+  const [isPanoramicHovered, setIsPanoramicHovered] = useState(false);
+  const [isPanoramicPlaying, setIsPanoramicPlaying] = useState(storeSettings.panoramicAutoplayEnabled !== false);
+
+  // Auto-advance panoramic carousel
+  useEffect(() => {
+    if (activePanoramicSlides.length <= 1) return;
+    if (!isPanoramicPlaying || isPanoramicHovered) return;
+
+    const intervalSec = storeSettings.panoramicAutoplayIntervalSec || 5;
+    const timer = setInterval(() => {
+      setCurrentPanoramicIndex((prev) => (prev + 1) % activePanoramicSlides.length);
+    }, intervalSec * 1000);
+
+    return () => clearInterval(timer);
+  }, [activePanoramicSlides.length, isPanoramicPlaying, isPanoramicHovered, storeSettings.panoramicAutoplayIntervalSec]);
+
+  // Keep index within bounds if list changes
+  useEffect(() => {
+    if (currentPanoramicIndex >= activePanoramicSlides.length) {
+      setCurrentPanoramicIndex(0);
+    }
+  }, [activePanoramicSlides.length, currentPanoramicIndex]);
+
+  const handleNextPanoramic = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setCurrentPanoramicIndex((prev) => (prev + 1) % activePanoramicSlides.length);
+  };
+
+  const handlePrevPanoramic = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setCurrentPanoramicIndex((prev) => (prev - 1 + activePanoramicSlides.length) % activePanoramicSlides.length);
+  };
+
+  const handlePanoramicClick = (slide: PanoramicBannerSlide) => {
+    if (slide.linkAction === 'product' && slide.productId) {
+      const prod = (products || []).find((p) => p.id === slide.productId);
+      if (prod && onOpenProductDetails) {
+        onOpenProductDetails(prod);
+        return;
+      }
+    }
+    if (slide.linkAction === 'combos') {
+      onScrollToCombos();
+      return;
+    }
+    onScrollToCatalog();
+  };
+
   return (
     <section className="pt-2 pb-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      {/* Official Panoramic Brand Banner (ALWAYS VISIBLE) */}
+      {/* Official Panoramic Brand Banner & Product Photos Carousel (ALWAYS VISIBLE & ROTATING) */}
       <div 
-        onClick={onScrollToCatalog}
-        className="mb-5 rounded-3xl overflow-hidden shadow-xl shadow-stone-900/10 border border-stone-200/90 bg-stone-950 group relative cursor-pointer transition-all duration-500 hover:shadow-2xl hover:border-amber-400/40"
-        title="Clique para ver o cardápio de sabores"
+        onMouseEnter={() => setIsPanoramicHovered(true)}
+        onMouseLeave={() => setIsPanoramicHovered(false)}
+        className="mb-5 rounded-3xl overflow-hidden shadow-xl shadow-stone-900/10 border border-stone-200/90 bg-stone-950 group relative select-none transition-all duration-500 hover:shadow-2xl hover:border-amber-400/40"
       >
-        <div className="relative aspect-[16/9] sm:aspect-[21/9] md:aspect-[2.8/1] w-full overflow-hidden flex items-center justify-center bg-stone-900">
-          <img
-            src="/images/banner.jpg"
-            alt="Naturalis Gourmet - Sabores Reais Geladinhos Artesanais"
-            className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700"
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none opacity-60 group-hover:opacity-30 transition-opacity" />
+        <div 
+          onClick={() => handlePanoramicClick(activePanoramicSlides[currentPanoramicIndex])}
+          className="relative aspect-[16/9] sm:aspect-[21/9] md:aspect-[2.8/1] w-full overflow-hidden flex items-center justify-center bg-stone-900 cursor-pointer"
+          title="Clique para ver no cardápio"
+        >
+          {activePanoramicSlides.map((slide, index) => {
+            const isCurrent = index === currentPanoramicIndex;
+            return (
+              <div
+                key={slide.id}
+                className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                  isCurrent ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none z-0'
+                }`}
+              >
+                <img
+                  src={slide.imageUrl}
+                  alt={slide.title || 'Banner Naturalis'}
+                  className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700"
+                  referrerPolicy="no-referrer"
+                />
+
+                {/* Subtle Cinematic Vignette Gradients */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30 pointer-events-none" />
+
+                {/* Slide Caption Overlay */}
+                {(slide.title || slide.subtitle || slide.badge) && (
+                  <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-16 sm:right-24 z-20 pointer-events-none">
+                    {slide.badge && (
+                      <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950 shadow-md mb-1.5 sm:mb-2">
+                        <Sparkles className="w-3 h-3" />
+                        {slide.badge}
+                      </span>
+                    )}
+                    {slide.title && (
+                      <h2 className="text-lg sm:text-2xl md:text-3xl font-black text-white tracking-tight drop-shadow-md leading-tight">
+                        {slide.title}
+                      </h2>
+                    )}
+                    {slide.subtitle && (
+                      <p className="text-xs sm:text-sm text-stone-200 line-clamp-1 sm:line-clamp-2 max-w-xl font-normal mt-0.5 drop-shadow">
+                        {slide.subtitle}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Admin Fast Banner Manager Button */}
+          {isAdminAuthenticated && onOpenBannerManager && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenBannerManager();
+              }}
+              className="absolute top-3 left-3 z-30 px-3 py-1.5 bg-stone-900/90 hover:bg-stone-900 text-amber-300 hover:text-amber-200 border border-amber-400/50 rounded-xl text-xs font-bold shadow-lg backdrop-blur-md flex items-center gap-1.5 transition-all cursor-pointer hover:scale-105"
+              title="Adicionar ou alterar fotos do carrossel do topo"
+            >
+              <ImageIcon className="w-3.5 h-3.5" />
+              <span>Gerenciar Fotos do Topo</span>
+            </button>
+          )}
+
+          {/* Autoplay Play/Pause Button */}
+          {activePanoramicSlides.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsPanoramicPlaying(!isPanoramicPlaying);
+              }}
+              className="absolute top-3 right-3 z-30 p-2 bg-black/50 hover:bg-black/80 text-white rounded-xl text-xs backdrop-blur-md border border-white/20 transition-all cursor-pointer opacity-70 hover:opacity-100"
+              title={isPanoramicPlaying ? 'Pausar rotação automática' : 'Retomar rotação automática'}
+            >
+              {isPanoramicPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+            </button>
+          )}
+
+          {/* Navigation Chevron Controls (visible if > 1 slide) */}
+          {activePanoramicSlides.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={handlePrevPanoramic}
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/40 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all opacity-0 group-hover:opacity-100 active:scale-95 cursor-pointer"
+                aria-label="Foto anterior"
+              >
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={handleNextPanoramic}
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/40 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all opacity-0 group-hover:opacity-100 active:scale-95 cursor-pointer"
+                aria-label="Próxima foto"
+              >
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
+
+              {/* Bottom Pagination Dots */}
+              <div className="absolute bottom-3 right-4 sm:right-6 z-30 flex items-center gap-1.5">
+                {activePanoramicSlides.map((_, dotIdx) => (
+                  <button
+                    key={dotIdx}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentPanoramicIndex(dotIdx);
+                    }}
+                    className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                      dotIdx === currentPanoramicIndex
+                        ? 'w-6 bg-amber-400'
+                        : 'w-2 bg-white/50 hover:bg-white/80'
+                    }`}
+                    aria-label={`Ir para foto ${dotIdx + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
 

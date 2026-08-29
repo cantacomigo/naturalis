@@ -65,6 +65,9 @@ import {
 import {
   FruitPulpOrdersModal
 } from './components/FruitPulpOrdersModal';
+import {
+  BannerManagerModal
+} from './components/BannerManagerModal';
 
 import { 
   GeladinhoProduct, 
@@ -256,6 +259,7 @@ export default function App() {
   const [isFruitPulpOpen, setIsFruitPulpOpen] = useState(false);
   const [isOrderManagerOpen, setIsOrderManagerOpen] = useState(false);
   const [isThermalPrintOpen, setIsThermalPrintOpen] = useState(false);
+  const [isBannerManagerOpen, setIsBannerManagerOpen] = useState(false);
   const [selectedProductDetail, setSelectedProductDetail] = useState<GeladinhoProduct | null>(null);
   const [customizingCombo, setCustomizingCombo] = useState<PromoCombo | null>(null);
 
@@ -268,7 +272,7 @@ export default function App() {
     }
   });
   const [isAdminAuthModalOpen, setIsAdminAuthModalOpen] = useState(false);
-  const [pendingAdminAction, setPendingAdminAction] = useState<'menu' | 'orders' | 'settings' | 'thermal' | 'neighborhoods' | 'fruitpulp' | null>(null);
+  const [pendingAdminAction, setPendingAdminAction] = useState<'menu' | 'orders' | 'settings' | 'thermal' | 'neighborhoods' | 'fruitpulp' | 'banners' | null>(null);
 
   // Orders History & Thermal Printing
   const [ordersHistory, setOrdersHistory] = useState<OrderRecord[]>(() => {
@@ -1255,7 +1259,7 @@ export default function App() {
   };
 
   // Security & Admin Action Access Guard
-  const requestAdminAction = (action: 'menu' | 'orders' | 'settings' | 'thermal' | 'neighborhoods' | 'fruitpulp') => {
+  const requestAdminAction = (action: 'menu' | 'orders' | 'settings' | 'thermal' | 'neighborhoods' | 'fruitpulp' | 'banners') => {
     if (isAdminAuthenticated) {
       if (action === 'menu') setIsMenuManagerOpen(true);
       else if (action === 'orders') setIsOrderManagerOpen(true);
@@ -1263,6 +1267,7 @@ export default function App() {
       else if (action === 'thermal') handleOpenThermalReceiptModal();
       else if (action === 'neighborhoods') setIsNeighborhoodManagerOpen(true);
       else if (action === 'fruitpulp') setIsFruitPulpOpen(true);
+      else if (action === 'banners') setIsBannerManagerOpen(true);
     } else {
       setPendingAdminAction(action);
       setIsAdminAuthModalOpen(true);
@@ -1284,6 +1289,7 @@ export default function App() {
       else if (action === 'thermal') handleOpenThermalReceiptModal();
       else if (action === 'neighborhoods') setIsNeighborhoodManagerOpen(true);
       else if (action === 'fruitpulp') setIsFruitPulpOpen(true);
+      else if (action === 'banners') setIsBannerManagerOpen(true);
     }
   };
 
@@ -1298,6 +1304,7 @@ export default function App() {
     setIsFruitPulpOpen(false);
     setIsOrderManagerOpen(false);
     setIsSettingsOpen(false);
+    setIsBannerManagerOpen(false);
     setIsThermalPrintOpen(false);
   };
 
@@ -1587,6 +1594,7 @@ export default function App() {
           onOpenMenu={() => setIsMenuManagerOpen(true)}
           onOpenNeighborhoods={() => setIsNeighborhoodManagerOpen(true)}
           onOpenFruitPulp={() => setIsFruitPulpOpen(true)}
+          onOpenBannerManager={() => setIsBannerManagerOpen(true)}
           onOpenSettings={() => setIsSettingsOpen(true)}
           onOpenThermal={() => handleOpenThermalReceiptModal()}
           onToggleDelivery={handleToggleDelivery}
@@ -1622,6 +1630,7 @@ export default function App() {
           onOpenQuiz={() => setIsQuizOpen(true)}
           isAdminAuthenticated={isAdminAuthenticated}
           onToggleHeroBanner={handleToggleHeroBanner}
+          onOpenBannerManager={() => requestAdminAction('banners')}
         />
 
         {/* Promo Combos Section */}
@@ -1847,7 +1856,17 @@ export default function App() {
         onSaveSettings={handleSaveStoreSettings}
         onOpenNeighborhoods={() => requestAdminAction('neighborhoods')}
         onOpenFruitPulp={() => requestAdminAction('fruitpulp')}
+        onOpenBannerManager={() => setIsBannerManagerOpen(true)}
         onLogoutAdmin={handleAdminLogout}
+      />
+
+      {/* Panoramic Banners & Multi-Photo Carousel Manager */}
+      <BannerManagerModal
+        isOpen={isBannerManagerOpen}
+        onClose={() => setIsBannerManagerOpen(false)}
+        settings={storeSettings}
+        products={products}
+        onSaveSettings={handleSaveStoreSettings}
       />
 
       {/* Fruit Pulp Orders & Supplier Supply Management */}

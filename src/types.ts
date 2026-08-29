@@ -138,6 +138,21 @@ export interface StoreSettings {
   // Display & Layout visibility settings
   showHeroBanner?: boolean; // Whether the top showcase hero banner & carousel is visible to customers
   showPromoCombos?: boolean; // Whether the 'Combos Especiais com Desconto' section is visible to customers
+  // Panoramic Top Banners / Image Slider
+  panoramicBanners?: PanoramicBannerSlide[];
+  panoramicAutoplayIntervalSec?: number; // Auto-rotation speed in seconds (default 5)
+  panoramicAutoplayEnabled?: boolean; // Whether auto-rotation is active (default true)
+}
+
+export interface PanoramicBannerSlide {
+  id: string;
+  imageUrl: string;
+  title?: string;
+  subtitle?: string;
+  badge?: string;
+  linkAction?: 'catalog' | 'combos' | 'product';
+  productId?: string;
+  active?: boolean;
 }
 
 export type OrderStatus = 'recebido' | 'em_preparo' | 'saiu_entrega' | 'pronto_retirada' | 'concluido' | 'cancelado';
