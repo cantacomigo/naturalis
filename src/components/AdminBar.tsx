@@ -98,10 +98,10 @@ export const AdminBar: React.FC<AdminBarProps> = ({
                   ? 'bg-purple-500/20 text-purple-300 border-purple-500/40 hover:bg-purple-500/30'
                   : 'bg-stone-800 text-stone-400 border-stone-700 hover:bg-stone-700'
               }`}
-              title={isHeroActive ? 'Clique para ocultar a vitrine/carrossel do topo para os clientes' : 'Clique para exibir a vitrine/carrossel do topo para os clientes'}
+              title={isHeroActive ? 'Clique para ocultar o carrossel rotativo e mini cards de destaques para os clientes' : 'Clique para exibir o carrossel rotativo e mini cards de destaques para os clientes'}
             >
               {isHeroActive ? <Eye className="w-3.5 h-3.5 text-purple-300" /> : <EyeOff className="w-3.5 h-3.5 text-stone-400" />}
-              <span>Vitrine: {isHeroActive ? '👁️ VISÍVEL' : '🚫 OCULTA'}</span>
+              <span>Carrossel: {isHeroActive ? '👁️ VISÍVEL' : '🚫 OCULTO'}</span>
             </button>
           )}
         </div>

@@ -140,7 +140,7 @@ export const StoreSettingsModal: React.FC<StoreSettingsModalProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-bold text-stone-800">
                 <LayoutTemplate className="w-4 h-4 text-rose-500" />
-                <span>Vitrine de Destaques & Carrossel (Topo do Cardápio)</span>
+                <span>Carrossel de Sabores & Destaques (Bento Grid)</span>
               </div>
               <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
                 formData.showHeroBanner !== false
@@ -155,13 +155,13 @@ export const StoreSettingsModal: React.FC<StoreSettingsModalProps> = ({
               <div className="space-y-0.5">
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs font-bold text-stone-900">
-                    {formData.showHeroBanner !== false ? 'Exibir Carrossel e Banners de Novidades' : 'Vitrine do Topo Oculta para Clientes'}
+                    {formData.showHeroBanner !== false ? 'Exibir Carrossel e Mini Cards de Destaques' : 'Carrossel e Mini Cards Ocultos'}
                   </span>
                 </div>
                 <p className="text-[11px] text-stone-500">
                   {formData.showHeroBanner !== false
-                    ? 'O cliente visualiza o carrossel com sabores em destaque, banner de atendimento e novidades.'
-                    : 'A vitrine fica oculta e o cliente entra direto nas categorias e sabores do cardápio.'}
+                    ? 'Exibe o carrossel rotativo de sabores, cartão de atendimento WhatsApp e mini destaques (o banner panorâmico da marca acima permanece sempre visível).'
+                    : 'Oculta o carrossel e os cards de destaques, levando o cliente direto para os kits/combos e cardápio de sabores (o banner panorâmico do topo permanece ativo).'}
                 </p>
               </div>
 
