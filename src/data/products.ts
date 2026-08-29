@@ -568,7 +568,7 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   thermalCustomFooter: 'Conserve no congelador a -18°C. Obrigado pela preferência!',
   thermalAutoOpenPrint: false,
   adminPin: '1234',
-  fruitPulpAppUrl: 'https://aistudio.google.com/apps/ed1b11a4-eeb9-45b2-a82b-149eb44c4413?showAssistant=true&showPreview=true',
+  fruitPulpAppUrl: 'https://ai.studio/apps/ed1b11a4-eeb9-45b2-a82b-149eb44c4413',
   fruitPulpSupplierName: 'Distribuidora de Polpas Naturais',
   fruitPulpSupplierPhone: ''
 };
