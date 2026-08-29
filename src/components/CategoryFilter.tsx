@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, X, SlidersHorizontal, Sparkles, Check, ArrowUpDown } from 'lucide-react';
+import { Search, X, Sparkles, ArrowUpDown } from 'lucide-react';
 import { ProductCategory, CategoryItem } from '../types';
 import { CATEGORIES_DATA } from '../data/products';
 
@@ -9,22 +9,13 @@ interface CategoryFilterProps {
   onSelectCategory: (category: ProductCategory) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  selectedTag: string | null;
-  onSelectTag: (tag: string | null) => void;
+  selectedTag?: string | null;
+  onSelectTag?: (tag: string | null) => void;
   sortBy: 'popular' | 'price-asc' | 'price-desc' | 'name';
   onSortChange: (sort: 'popular' | 'price-asc' | 'price-desc' | 'name') => void;
   categoryCounts: Record<string, number>;
   totalResultsCount: number;
 }
-
-const QUICK_TAGS = [
-  { id: 'Mais Vendido', label: '⭐ Mais Vendidos' },
-  { id: 'Nutella Pura', label: '🌰 Nutella Original' },
-  { id: 'Fruta de Verdade', label: '🍓 Frutas Naturais' },
-  { id: 'Zero Açúcar', label: '🌿 Fit & Zero Açúcar' },
-  { id: 'Contém Álcool', label: '🍸 Drinks 18+' },
-  { id: 'Cremoso', label: '🥛 Super Cremosos' }
-];
 
 export const CategoryFilter: React.FC<CategoryFilterProps> = ({
   categories = CATEGORIES_DATA,
@@ -155,31 +146,6 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
               >
                 {count}
               </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Quick Tag Chips Row */}
-      <div className="flex items-center gap-2 flex-wrap pt-3">
-        <span className="text-xs font-bold text-stone-500 mr-1 flex items-center gap-1">
-          <SlidersHorizontal className="w-3 h-3 text-stone-400" />
-          Filtros rápidos:
-        </span>
-        {QUICK_TAGS.map((tag) => {
-          const isSelected = selectedTag === tag.id;
-          return (
-            <button
-              key={tag.id}
-              onClick={() => onSelectTag(isSelected ? null : tag.id)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 ${
-                isSelected
-                  ? 'bg-gradient-to-r from-rose-600 to-rose-500 text-white shadow-sm shadow-rose-500/20'
-                  : 'bg-white hover:bg-stone-50 text-stone-600 border border-stone-200/80 shadow-xs'
-              }`}
-            >
-              {isSelected && <Check className="w-3 h-3 text-white" />}
-              <span>{tag.label}</span>
             </button>
           );
         })}

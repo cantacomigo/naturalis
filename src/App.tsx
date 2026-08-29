@@ -1557,6 +1557,15 @@ export default function App() {
     dbSaveStoreSettings(nextSettings).catch(console.error);
   };
 
+  const handleToggleHeroBanner = () => {
+    const nextSettings = {
+      ...storeSettings,
+      showHeroBanner: storeSettings.showHeroBanner === false ? true : false,
+    };
+    setStoreSettings(nextSettings);
+    dbSaveStoreSettings(nextSettings).catch(console.error);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-stone-50/50 text-stone-900 font-sans antialiased selection:bg-rose-500 selection:text-white">
       {/* Admin Mode Floating Top Bar (Visible only when Admin is logged in) */}
@@ -1572,6 +1581,7 @@ export default function App() {
           onOpenSettings={() => setIsSettingsOpen(true)}
           onOpenThermal={() => handleOpenThermalReceiptModal()}
           onToggleDelivery={handleToggleDelivery}
+          onToggleHeroBanner={handleToggleHeroBanner}
           onLogout={handleAdminLogout}
         />
       )}
@@ -1591,16 +1601,36 @@ export default function App() {
 
       {/* Main Content */}
       <main className="flex-1">
-        {/* Hero Banner with Rotating Carousel */}
-        <HeroBanner
-          storeSettings={storeSettings}
-          products={products}
-          onAddToCart={handleAddToCart}
-          onOpenProductDetails={setSelectedProductDetail}
-          onScrollToCatalog={handleScrollToCatalog}
-          onScrollToCombos={handleScrollToCombos}
-          onOpenQuiz={() => setIsQuizOpen(true)}
-        />
+        {/* Hero Banner with Rotating Carousel (Showcase) */}
+        {storeSettings.showHeroBanner !== false ? (
+          <HeroBanner
+            storeSettings={storeSettings}
+            products={products}
+            onAddToCart={handleAddToCart}
+            onOpenProductDetails={setSelectedProductDetail}
+            onScrollToCatalog={handleScrollToCatalog}
+            onScrollToCombos={handleScrollToCombos}
+            onOpenQuiz={() => setIsQuizOpen(true)}
+          />
+        ) : (
+          isAdminAuthenticated && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-1">
+              <div className="p-3 bg-purple-50/90 border border-purple-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-purple-950 shadow-2xs">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-1.5 bg-purple-100 rounded-xl text-sm">👁️‍🗨️</span>
+                  <span><strong>Modo Lojista:</strong> A vitrine de destaques e o carrossel do topo estão <strong>ocultos</strong> para os clientes.</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleToggleHeroBanner}
+                  className="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer shrink-0 self-end sm:self-auto"
+                >
+                  Tornar Vitrine Visível
+                </button>
+              </div>
+            </div>
+          )
+        )}
 
         {/* Promo Combos Section */}
         <PromoCombos

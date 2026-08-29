@@ -135,6 +135,8 @@ export interface StoreSettings {
   fruitPulpAppUrl?: string;
   fruitPulpSupplierPhone?: string;
   fruitPulpSupplierName?: string;
+  // Display & Layout visibility settings
+  showHeroBanner?: boolean; // Whether the top showcase hero banner & carousel is visible to customers
 }
 
 export type OrderStatus = 'recebido' | 'em_preparo' | 'saiu_entrega' | 'pronto_retirada' | 'concluido' | 'cancelado';

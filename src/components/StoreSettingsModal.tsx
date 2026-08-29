@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Settings, Save, Check, Phone, DollarSign, Store, QrCode, Printer, Truck, Lock, Shield, MapPin, Bike, Building2, AlertCircle, CheckCircle2, ExternalLink } from 'lucide-react';
+import { X, Settings, Save, Check, Phone, DollarSign, Store, QrCode, Printer, Truck, Lock, Shield, MapPin, Bike, Building2, AlertCircle, CheckCircle2, ExternalLink, LayoutTemplate, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { StoreSettings } from '../types';
 import { NaturalisLogo } from './NaturalisLogo';
 
@@ -132,6 +132,54 @@ export const StoreSettingsModal: React.FC<StoreSettingsModalProps> = ({
                 onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
                 className="w-full bg-white border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-stone-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
               />
+            </div>
+          </div>
+
+          {/* Layout & Vitrine Display Settings */}
+          <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-bold text-stone-800">
+                <LayoutTemplate className="w-4 h-4 text-rose-500" />
+                <span>Vitrine de Destaques & Carrossel (Topo do Cardápio)</span>
+              </div>
+              <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
+                formData.showHeroBanner !== false
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                  : 'bg-stone-200/80 text-stone-600 border-stone-300'
+              }`}>
+                {formData.showHeroBanner !== false ? '👁️ Visível' : '🚫 Oculto'}
+              </span>
+            </div>
+
+            <div className="p-3 bg-white rounded-xl border border-stone-200 flex items-center justify-between gap-3">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-stone-900">
+                    {formData.showHeroBanner !== false ? 'Exibir Carrossel e Banners de Novidades' : 'Vitrine do Topo Oculta para Clientes'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-stone-500">
+                  {formData.showHeroBanner !== false
+                    ? 'O cliente visualiza o carrossel com sabores em destaque, banner de atendimento e novidades.'
+                    : 'A vitrine fica oculta e o cliente entra direto nas categorias e sabores do cardápio.'}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, showHeroBanner: formData.showHeroBanner === false ? true : false })}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  formData.showHeroBanner !== false ? 'bg-emerald-600' : 'bg-stone-300'
+                }`}
+                role="switch"
+                aria-checked={formData.showHeroBanner !== false}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                    formData.showHeroBanner !== false ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
             </div>
           </div>
 
