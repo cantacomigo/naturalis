@@ -1,4 +1,5 @@
 import { CartItem, CartComboItem, CustomerDetails, StoreSettings, OrderRecord, OrderStatus, PaymentStatus } from '../types';
+import { generatePixPayload } from './pixPayload';
 
 export function formatCurrency(value: number | undefined | null): string {
   const num = typeof value === 'number' && !isNaN(value) ? value : 0;
@@ -125,8 +126,25 @@ export function generateWhatsAppMessage(data: OrderSummaryData): string {
 
   text += `\n💳 *FORMA DE PAGAMENTO:*\n`;
   if (customer.paymentMethod === 'pix') {
-    text += `⚡ *PIX* (Chave ${storeSettings.pixKeyType}: ${storeSettings.pixKey})\n`;
-    text += `📸 *Comprovante:* Enviarei a foto/comprovante do Pix aqui nesta conversa para confirmação imediata!\n`;
+    text += `⚡ *PIX Automático:* ${formatCurrency(total)}\n`;
+    text += `• *Chave PIX (${storeSettings.pixKeyType}):* ${storeSettings.pixKey}\n`;
+    text += `• *Titular:* ${storeSettings.pixName || storeSettings.storeName}\n`;
+    try {
+      const pixPayload = generatePixPayload({
+        pixKey: storeSettings.pixKey,
+        merchantName: storeSettings.pixName || storeSettings.storeName,
+        merchantCity: storeSettings.city || 'BRASIL',
+        amount: total,
+        txId: orderId,
+        description: `Pedido ${orderId}`
+      });
+      if (pixPayload) {
+        text += `\n📋 *Código Pix Copia e Cola:*\n\`\`\`${pixPayload}\`\`\`\n`;
+      }
+    } catch (e) {
+      console.error('Error generating PIX payload for WhatsApp message', e);
+    }
+    text += `\n📸 *Comprovante:* Enviarei a foto/comprovante do Pix aqui nesta conversa para confirmação imediata!\n`;
   } else if (customer.paymentMethod === 'cartao_entrega') {
     text += `💳 *Cartão (Débito/Crédito na Entrega)* - Levar maquininha\n`;
   } else if (customer.paymentMethod === 'dinheiro') {

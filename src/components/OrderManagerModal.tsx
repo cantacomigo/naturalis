@@ -41,7 +41,8 @@ import {
   Volume2,
   VolumeX,
   Bell,
-  PhoneIncoming
+  PhoneIncoming,
+  QrCode
 } from 'lucide-react';
 import {
   OrderRecord,
@@ -63,6 +64,7 @@ import {
   generateShortOrderId
 } from '../utils/whatsapp';
 import { orderSoundManager } from '../utils/orderAlertSound';
+import { PixQrCodeModal } from './PixQrCodeModal';
 
 interface OrderManagerModalProps {
   isOpen: boolean;
@@ -103,6 +105,7 @@ export const OrderManagerModal: React.FC<OrderManagerModalProps> = ({
 
   // Modal sub-states
   const [selectedOrderForDetails, setSelectedOrderForDetails] = useState<OrderRecord | null>(null);
+  const [pixModalOrder, setPixModalOrder] = useState<OrderRecord | null>(null);
   const [whatsappNotifyModalOrder, setWhatsappNotifyModalOrder] = useState<OrderRecord | null>(null);
   const [whatsappCustomMessage, setWhatsappCustomMessage] = useState('');
   const [whatsappTargetStatus, setWhatsappTargetStatus] = useState<OrderStatus>('em_preparo');
@@ -902,6 +905,7 @@ export const OrderManagerModal: React.FC<OrderManagerModalProps> = ({
                         onPrintReceipt={onPrintReceipt}
                         onOpenWhatsAppNotify={handleOpenWhatsAppNotify}
                         onSelectDetails={setSelectedOrderForDetails}
+                        onOpenPixModal={setPixModalOrder}
                         onDeleteOrder={onDeleteOrder}
                         getNextStatus={getNextStatus}
                         getNextStatusLabel={getNextStatusLabel}
@@ -933,6 +937,7 @@ export const OrderManagerModal: React.FC<OrderManagerModalProps> = ({
                         onPrintReceipt={onPrintReceipt}
                         onOpenWhatsAppNotify={handleOpenWhatsAppNotify}
                         onSelectDetails={setSelectedOrderForDetails}
+                        onOpenPixModal={setPixModalOrder}
                         onDeleteOrder={onDeleteOrder}
                         getNextStatus={getNextStatus}
                         getNextStatusLabel={getNextStatusLabel}
@@ -964,6 +969,7 @@ export const OrderManagerModal: React.FC<OrderManagerModalProps> = ({
                         onPrintReceipt={onPrintReceipt}
                         onOpenWhatsAppNotify={handleOpenWhatsAppNotify}
                         onSelectDetails={setSelectedOrderForDetails}
+                        onOpenPixModal={setPixModalOrder}
                         onDeleteOrder={onDeleteOrder}
                         getNextStatus={getNextStatus}
                         getNextStatusLabel={getNextStatusLabel}
@@ -995,6 +1001,7 @@ export const OrderManagerModal: React.FC<OrderManagerModalProps> = ({
                         onPrintReceipt={onPrintReceipt}
                         onOpenWhatsAppNotify={handleOpenWhatsAppNotify}
                         onSelectDetails={setSelectedOrderForDetails}
+                        onOpenPixModal={setPixModalOrder}
                         onDeleteOrder={onDeleteOrder}
                         getNextStatus={getNextStatus}
                         getNextStatusLabel={getNextStatusLabel}
@@ -1218,6 +1225,19 @@ export const OrderManagerModal: React.FC<OrderManagerModalProps> = ({
 
                       {/* Action buttons */}
                       <div className="flex items-center gap-2 flex-wrap">
+                        {/* Pix QR Code preview button if payment method is pix */}
+                        {order.customer.paymentMethod === 'pix' && (
+                          <button
+                            type="button"
+                            onClick={() => setPixModalOrder(order)}
+                            className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all shadow-xs"
+                            title="Ver e copiar QR Code Pix deste pedido"
+                          >
+                            <QrCode className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>QR Code Pix</span>
+                          </button>
+                        )}
+
                         {/* Notify Customer on WhatsApp */}
                         <button
                           type="button"
@@ -1763,6 +1783,18 @@ export const OrderManagerModal: React.FC<OrderManagerModalProps> = ({
             </div>
           </div>
         )}
+
+        {/* PIX QR Code & Copia e Cola Modal for Order */}
+        {pixModalOrder && (
+          <PixQrCodeModal
+            isOpen={!!pixModalOrder}
+            onClose={() => setPixModalOrder(null)}
+            amount={pixModalOrder.total}
+            orderId={pixModalOrder.orderId}
+            customerName={pixModalOrder.customer.name}
+            storeSettings={storeSettings}
+          />
+        )}
       </div>
     </div>
   );
@@ -1778,6 +1810,7 @@ interface KanbanOrderCardProps {
   onPrintReceipt: (order: OrderRecord) => void;
   onOpenWhatsAppNotify: (order: OrderRecord, targetStatus?: OrderStatus) => void;
   onSelectDetails: (order: OrderRecord) => void;
+  onOpenPixModal?: (order: OrderRecord) => void;
   onDeleteOrder: (orderId: string) => void;
   getNextStatus: (currentStatus?: OrderStatus, deliveryType?: 'delivery' | 'retirada') => OrderStatus;
   getNextStatusLabel: (currentStatus?: OrderStatus, deliveryType?: 'delivery' | 'retirada') => string;
@@ -1790,6 +1823,7 @@ const KanbanOrderCard: React.FC<KanbanOrderCardProps> = ({
   onPrintReceipt,
   onOpenWhatsAppNotify,
   onSelectDetails,
+  onOpenPixModal,
   onDeleteOrder,
   getNextStatus,
   getNextStatusLabel,
@@ -1853,6 +1887,17 @@ const KanbanOrderCard: React.FC<KanbanOrderCardProps> = ({
         </button>
 
         <div className="flex items-center gap-1">
+          {order.customer.paymentMethod === 'pix' && (
+            <button
+              type="button"
+              onClick={() => (onOpenPixModal ? onOpenPixModal(order) : onSelectDetails(order))}
+              className="p-1.5 text-emerald-700 hover:bg-emerald-50 rounded-lg cursor-pointer transition-colors"
+              title="Abrir QR Code Pix"
+            >
+              <QrCode className="w-3.5 h-3.5" />
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => onOpenWhatsAppNotify(order, currentStatus)}

@@ -21,6 +21,8 @@ import confetti from 'canvas-confetti';
 import { CartItem, CartComboItem, CustomerDetails, StoreSettings, DeliveryType, PaymentMethod, NeighborhoodFee } from '../types';
 import { NEIGHBORHOODS_DATA } from '../data/products';
 import { formatCurrency, generateWhatsAppMessage, buildWhatsAppUrl, generateShortOrderId } from '../utils/whatsapp';
+import { PixInlineCard } from './PixInlineCard';
+import { PixQrCodeModal } from './PixQrCodeModal';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -82,6 +84,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [notes, setNotes] = useState('');
 
   const [copiedPix, setCopiedPix] = useState(false);
+  const [isPixZoomOpen, setIsPixZoomOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   // Enforce pickup if delivery is turned off in store settings
@@ -619,41 +622,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </button>
             </div>
 
-            {/* Pix key copy preview and receipt reminder */}
+            {/* Pix key copy preview, QR code and receipt reminder */}
             {paymentMethod === 'pix' && (
-              <div className="p-3.5 bg-emerald-50/70 rounded-xl border border-emerald-200 space-y-2.5 text-xs">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <span className="text-stone-500 font-medium text-[11px] block">
-                      Chave PIX ({storeSettings?.pixKeyType || 'Celular'}):
-                    </span>
-                    <span className="font-mono font-bold text-emerald-800 select-all">
-                      {storeSettings?.pixKey || '11999998888'}
-                    </span>
-                    <span className="text-[10px] text-stone-500 block font-medium">
-                      Titular: {storeSettings?.pixName || 'Naturalis Gourmet'}
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleCopyPix}
-                    className="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1 shadow-xs cursor-pointer shrink-0"
-                  >
-                    {copiedPix ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedPix ? 'Copiado!' : 'Copiar'}</span>
-                  </button>
-                </div>
-
-                {/* Notice to send payment confirmation */}
-                <div className="pt-2 border-t border-emerald-200/80 flex items-start gap-2 text-emerald-900 bg-emerald-100/60 p-2.5 rounded-lg text-[11px]">
-                  <span className="text-emerald-700 font-bold text-sm leading-none mt-0.5">⚠️</span>
-                  <div>
-                    <strong className="font-bold text-emerald-950 block">Envio de Comprovante:</strong>
-                    <span>Após realizar o Pix, por favor <strong>envie o comprovante de pagamento no WhatsApp</strong> para confirmarmos e iniciarmos o preparo do seu pedido imediatamente.</span>
-                  </div>
-                </div>
-              </div>
+              <PixInlineCard
+                amount={total}
+                orderId={undefined}
+                storeSettings={storeSettings}
+                compact={true}
+                showSteps={true}
+                showDownload={true}
+                onEnlargeQrCode={() => setIsPixZoomOpen(true)}
+              />
             )}
 
             {/* Change for cash */}
@@ -723,6 +702,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Enlarged QR Code Modal */}
+      {isPixZoomOpen && (
+        <PixQrCodeModal
+          isOpen={isPixZoomOpen}
+          onClose={() => setIsPixZoomOpen(false)}
+          amount={total}
+          customerName={name || 'Cliente'}
+          storeSettings={storeSettings}
+        />
+      )}
     </div>
   );
 };

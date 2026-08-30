@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Settings, Save, Check, Phone, DollarSign, Store, QrCode, Printer, Truck, Lock, Shield, MapPin, Bike, Building2, AlertCircle, CheckCircle2, ExternalLink, LayoutTemplate, Eye, EyeOff, Sparkles, Flame, Image as ImageIcon } from 'lucide-react';
+import { X, Settings, Save, Check, Phone, DollarSign, Store, QrCode, Printer, Truck, Lock, Shield, MapPin, Bike, Building2, AlertCircle, CheckCircle2, ExternalLink, LayoutTemplate, Eye, EyeOff, Sparkles, Flame, Image as ImageIcon, Smartphone } from 'lucide-react';
 import { StoreSettings } from '../types';
 import { NaturalisLogo } from './NaturalisLogo';
+import { PixQrCodeModal } from './PixQrCodeModal';
 
 interface StoreSettingsModalProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ export const StoreSettingsModal: React.FC<StoreSettingsModalProps> = ({
   const [minOrderStr, setMinOrderStr] = useState(String(settings.minOrderValue ?? 15.0));
   const [freeThresholdStr, setFreeThresholdStr] = useState(String(settings.freeDeliveryThreshold ?? 70.0));
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [isTestPixModalOpen, setIsTestPixModalOpen] = useState(false);
 
   // Sync state whenever modal opens or settings change from outside
   useEffect(() => {
@@ -399,9 +401,19 @@ export const StoreSettingsModal: React.FC<StoreSettingsModalProps> = ({
 
           {/* PIX Key Settings */}
           <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
-            <div className="flex items-center gap-2 text-xs font-bold text-stone-800">
-              <QrCode className="w-4 h-4 text-rose-500" />
-              <span>Configurações do PIX</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-bold text-stone-800">
+                <QrCode className="w-4 h-4 text-emerald-600" />
+                <span>Configurações do PIX & QR Code Automático</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsTestPixModalOpen(true)}
+                className="px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-[11px] font-extrabold flex items-center gap-1.5 cursor-pointer shadow-2xs transition-all active:scale-95"
+              >
+                <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Testar QR Code Pix</span>
+              </button>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
@@ -443,6 +455,7 @@ export const StoreSettingsModal: React.FC<StoreSettingsModalProps> = ({
                 type="text"
                 value={formData.pixName}
                 onChange={(e) => setFormData({ ...formData, pixName: e.target.value })}
+                placeholder="Ex: Naturalis Gourmet Ltda"
                 className="w-full bg-white border border-stone-200 rounded-xl px-2.5 py-2 text-xs text-stone-900 font-medium focus:outline-none focus:ring-2 focus:ring-rose-500/20"
               />
             </div>
@@ -690,6 +703,18 @@ export const StoreSettingsModal: React.FC<StoreSettingsModalProps> = ({
           </div>
         </form>
       </div>
+
+      {/* Test Pix QR Code Simulation Modal */}
+      {isTestPixModalOpen && (
+        <PixQrCodeModal
+          isOpen={isTestPixModalOpen}
+          onClose={() => setIsTestPixModalOpen(false)}
+          amount={10.0}
+          orderId="TESTE"
+          customerName="Administrador (Teste)"
+          storeSettings={formData}
+        />
+      )}
     </div>
   );
 };

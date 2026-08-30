@@ -3,6 +3,8 @@ import { CheckCircle2, MessageCircle, Copy, Check, QrCode, ExternalLink, RotateC
 import { StoreSettings } from '../types';
 import { formatCurrency } from '../utils/whatsapp';
 import { NaturalisLogo } from './NaturalisLogo';
+import { PixInlineCard } from './PixInlineCard';
+import { PixQrCodeModal } from './PixQrCodeModal';
 
 interface WhatsAppSuccessModalProps {
   isOpen: boolean;
@@ -26,7 +28,7 @@ export const WhatsAppSuccessModal: React.FC<WhatsAppSuccessModalProps> = ({
   onOpenThermalPrint,
 }) => {
   const [copiedMessage, setCopiedMessage] = useState(false);
-  const [copiedPix, setCopiedPix] = useState(false);
+  const [isPixZoomOpen, setIsPixZoomOpen] = useState(false);
 
   if (!isOpen) return null;
 
@@ -35,14 +37,6 @@ export const WhatsAppSuccessModal: React.FC<WhatsAppSuccessModalProps> = ({
       navigator.clipboard.writeText(rawMessage);
       setCopiedMessage(true);
       setTimeout(() => setCopiedMessage(false), 2000);
-    }
-  };
-
-  const handleCopyPix = () => {
-    if (storeSettings?.pixKey && navigator.clipboard) {
-      navigator.clipboard.writeText(storeSettings.pixKey);
-      setCopiedPix(true);
-      setTimeout(() => setCopiedPix(false), 2000);
     }
   };
 
@@ -104,36 +98,18 @@ export const WhatsAppSuccessModal: React.FC<WhatsAppSuccessModalProps> = ({
             </button>
           )}
 
-          {/* If PIX payment */}
+          {/* If PIX payment: Full Automated PIX Inline Card with QR Code */}
           {orderSummary?.customer?.paymentMethod === 'pix' && (
-            <div className="p-4 bg-emerald-50/60 rounded-2xl border border-emerald-200 space-y-2.5">
-              <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs">
-                <QrCode className="w-4 h-4 text-emerald-600" />
-                <span>Dados para Pagamento via PIX:</span>
-              </div>
-              <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-emerald-200/80">
-                <div className="text-xs">
-                  <span className="text-[10px] text-stone-500 block font-medium">Chave {storeSettings?.pixKeyType || 'PIX'}:</span>
-                  <span className="font-mono font-bold text-emerald-700 select-all">{storeSettings?.pixKey || ''}</span>
-                </div>
-                <button
-                  onClick={handleCopyPix}
-                  className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                  {copiedPix ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedPix ? 'Copiado!' : 'Copiar'}</span>
-                </button>
-              </div>
-              <p className="text-[11px] text-emerald-800 font-medium">
-                Valor Total do Pedido: <strong className="font-bold">{formatCurrency(orderSummary?.total || 0)}</strong>
-              </p>
-              <div className="bg-emerald-100/70 p-2.5 rounded-xl border border-emerald-200 text-emerald-950 text-[11px] flex items-start gap-2">
-                <span className="text-emerald-700 font-bold text-sm leading-none mt-0.5">📸</span>
-                <span>
-                  <strong>Importante:</strong> Após efetuar a transferência Pix, <strong>envie o comprovante de pagamento no WhatsApp</strong> para que possamos confirmar seu pedido e agilizar o envio/retirada!
-                </span>
-              </div>
-            </div>
+            <PixInlineCard
+              amount={orderSummary?.total || 0}
+              orderId={orderSummary?.orderId}
+              storeSettings={storeSettings}
+              compact={false}
+              showSteps={true}
+              showDownload={true}
+              onOpenWhatsAppReceipt={handleOpenWhatsApp}
+              onEnlargeQrCode={() => setIsPixZoomOpen(true)}
+            />
           )}
 
           {/* Automatic Inventory Deduction Feedback */}
@@ -207,6 +183,19 @@ export const WhatsAppSuccessModal: React.FC<WhatsAppSuccessModalProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Enlarged QR Code Modal */}
+      {isPixZoomOpen && (
+        <PixQrCodeModal
+          isOpen={isPixZoomOpen}
+          onClose={() => setIsPixZoomOpen(false)}
+          amount={orderSummary?.total || 0}
+          orderId={orderSummary?.orderId}
+          customerName={orderSummary?.customer?.name}
+          storeSettings={storeSettings}
+          onSendReceiptWhatsApp={handleOpenWhatsApp}
+        />
+      )}
     </div>
   );
 };
